@@ -60,7 +60,33 @@ main{padding:40px 48px 80px;min-width:0}
 .search input:focus{border-color:var(--pine)}
 .tools select{padding:9px 10px;border:1px solid var(--line);background:var(--sheet);border-radius:10px}
 
-.groups{max-width:960px;display:flex;flex-direction:column;gap:30px}
+.week{max-width:960px;display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:-8px 0 30px}
+.week[hidden]{display:none}
+.week.has-late{grid-template-columns:auto repeat(7,1fr)}
+.day{border:1px solid var(--line);background:var(--sheet);border-radius:10px;padding:8px 6px 9px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1px;color:var(--ink)}
+.day:hover{border-color:var(--pine)}
+.day .wd{font-size:12px;color:var(--muted)}
+.day .dn{font-family:var(--serif);font-size:22px;font-weight:500;line-height:1.1}
+.day .ct{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;min-height:18px}
+.day.has .ct{color:var(--pine);font-weight:600}
+.day.is-today{border-color:var(--amber)}
+.day.is-today .wd,.day.is-today .ct{color:var(--amber)}
+.day.none{opacity:.55;cursor:default}
+.day.none:hover{border-color:var(--line)}
+.wk-late{border-color:#EBCFCB;background:var(--ox-soft);color:var(--ox);padding:8px 14px}
+.wk-late .wd,.wk-late .ct{color:var(--ox)}
+.wk-late .dn{color:var(--ox)}
+.qa{display:flex;gap:4px;justify-content:flex-end;margin-top:6px;opacity:0;transition:opacity .15s}
+.row:hover .qa,.row:focus-within .qa{opacity:1}
+.qa button{border:1px solid var(--line);background:var(--sheet);border-radius:7px;padding:2px 8px;font-size:12px;color:var(--ink-2)}
+.qa button:hover{border-color:var(--pine);color:var(--pine)}
+.hist{grid-column:1/-1;list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.hist li{font-size:14px;color:var(--ink-2);position:relative}
+.hist li::before{content:"";position:absolute;left:-19px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--sheet);border:2px solid var(--muted)}
+.hist time{display:block;font-size:12.5px;color:var(--muted)}
+.hist-empty{grid-column:1/-1;font-size:13.5px;color:var(--muted);margin:0}
+.groups{scroll-margin-top:20px;max-width:960px;display:flex;flex-direction:column;gap:30px}
+.group{scroll-margin-top:16px}
 .group h2{display:flex;align-items:baseline;gap:10px;margin:0 0 10px;font-family:var(--serif);font-weight:500;font-size:24px;line-height:1.2}
 .group h2 .d{font-family:var(--sans);font-size:14px;color:var(--muted);font-weight:400}
 .group h2 .n{margin-left:auto;font-family:var(--sans);font-size:13px;color:var(--muted);font-weight:400}
@@ -147,15 +173,35 @@ body.open .drawer{transform:none;visibility:visible;transition:transform .25s ea
   .row{grid-template-columns:26px 1fr;padding:13px 14px 13px 12px}
   .right{grid-column:2;text-align:left;padding:0}
   .d-body{grid-template-columns:1fr}
+  .week{grid-template-columns:repeat(7,minmax(44px,1fr));overflow-x:auto;margin-right:-16px;padding-right:16px}
+  .week.has-late{grid-template-columns:auto repeat(7,minmax(44px,1fr))}
+  .qa{display:none}
   .mobile-more{display:flex!important}
 }
 .mobile-more{display:none;gap:8px;flex-wrap:wrap;margin-top:28px}
 @media (min-width:901px){.brand-row{display:contents}}
+@media (prefers-color-scheme:dark){
+  :root{--paper:#121815;--sheet:#1A221E;--ink:#E6ECE8;--ink-2:#B3BEB8;--muted:#86928B;--line:#2B3530;--line-2:#232C27;
+    --pine:#7FB5A2;--pine-deep:#0F1E19;--pine-soft:#1F3029;--ox:#E58B85;--ox-soft:#3A2321;--amber:#E0B060;--amber-soft:#3A2F1C}
+  .row:hover{background:#1F2823}
+  .check{background:transparent;border-color:#4A5650}
+  .row.done .check{color:#0F1E19}
+  .fl input,.fl select,.fl textarea,.quick button,.search input,.tools select,.btn{background:#141B17;color:var(--ink)}
+  .fl.todo-f textarea{background:#18201C}
+  .btn.pri{background:var(--pine);color:#0F1E19;border-color:var(--pine)}
+  .btn.pri:hover{background:#9CCAB9}
+  .group.late .sheet{border-color:#4A2C29}
+  .toast{background:#E6ECE8;color:#121815}.toast button{color:#2E5A4C}
+  .day[aria-pressed="true"]{background:var(--pine)!important;color:#0F1E19!important}
+  .seal{background:#1F3029}
+  .new{background:#E6ECE8}
+  .wk-late{background:var(--ox-soft)}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media print{
   body{background:#fff}
   .app{display:block}
-  .side,.tools,.check,.mobile-more,.toast{display:none!important}
+  .side,.tools,.check,.mobile-more,.toast,.week,.qa{display:none!important}
   main{padding:0}
   .top h1{font-size:28px}
   .row{break-inside:avoid;padding:8px 10px;grid-template-columns:1fr auto}
@@ -202,6 +248,7 @@ body.open .drawer{transform:none;visibility:visible;transition:transform .25s ea
         </select>
       </div>
     </header>
+    <nav class="week" id="week" aria-label="Próximos 7 dias"></nav>
     <div class="groups" id="groups"></div>
     <div class="mobile-more">
       <button class="btn" data-m="export">Baixar backup</button>
@@ -246,7 +293,9 @@ body.open .drawer{transform:none;visibility:visible;transition:transform .25s ea
         <select name="parceria"><option value="">Não informado</option><option>Sim</option><option>Não</option></select>
       </label>
       <label class="fl full">Parceria com<input name="parceiro" placeholder="Nome de quem divide o caso"></label>
-      <p class="note">Ao mudar o andamento, a data do último andamento vira hoje automaticamente.</p>
+      <p class="note">Ao mudar o andamento, a data do último andamento vira hoje e o andamento anterior vai para o histórico.</p>
+      <p class="sec" id="histTitle">Histórico</p>
+      <div id="hist" style="display:contents"></div>
     </div>
     <div class="d-foot">
       <button type="button" class="btn del" id="del">Excluir cliente</button>
@@ -353,7 +402,7 @@ function linha(c,key){
     '<p class="todo">'+(esc(c.aFazer)||'<span style="color:var(--muted)">Sem providência definida</span>')+'</p>'+
     (c.andamento?'<p class="and">'+esc(c.andamento)+'</p>':'')+
     (tags.length?'<div class="tags">'+tags.join('')+'</div>':'')+'</div>'+
-    '<div class="right'+rc+'">'+right+'</div></div>';
+    '<div class="right'+rc+'">'+right+(done(c)?'':'<div class="qa"><button data-a="adiar" data-d="1">Amanhã</button><button data-a="adiar" data-d="7">+1 semana</button></div>')+'</div></div>';
 }
 
 function renderGroups(){
@@ -383,11 +432,28 @@ function renderGroups(){
   }
   const ordem=[...groups.keys()].sort();
   el.innerHTML=ordem.map(k=>{const g=groups.get(k);
-    return '<section class="group'+(g.tone?' '+g.tone:'')+'"><h2>'+esc(g.t)+(g.d?'<span class="d">'+esc(g.d)+'</span>':'')+'<span class="n">'+plural(g.items.length,'cliente','clientes')+'</span></h2><div class="sheet">'+g.items.map(c=>linha(c,key)).join('')+'</div></section>';
+    return '<section class="group'+(g.tone?' '+g.tone:'')+'" id="'+gid(k)+'"><h2>'+esc(g.t)+(g.d?'<span class="d">'+esc(g.d)+'</span>':'')+'<span class="n">'+plural(g.items.length,'cliente','clientes')+'</span></h2><div class="sheet">'+g.items.map(c=>linha(c,key)).join('')+'</div></section>';
   }).join('');
 }
 
-function render(){renderViews();renderTop();renderGroups()}
+const gid=k=>'g-'+String(k).replace(/[^\w-]/g,'');
+function renderWeek(){
+  const el=$('#week');
+  if(view!=='agenda'||!clientes.length){el.hidden=true;el.innerHTML='';return}
+  el.hidden=false;
+  const abertos=clientes.filter(c=>!done(c));
+  const l=atrasados();
+  let h='';
+  if(l)h+='<button class="day wk-late" data-jump="'+gid('0')+'"><span class="wd">Atrasados</span><span class="dn">'+l+'</span><span class="ct">ver</span></button>';
+  for(let i=0;i<7;i++){
+    const d=addDays(hoje(),i), n=abertos.filter(c=>c.verificar===d).length, dt=parse(d);
+    const wd=i===0?'Hoje':cap(dt.toLocaleDateString('pt-BR',{weekday:'short'}).replace('.',''));
+    h+='<button class="day'+(i===0?' is-today':'')+(n?' has':' none')+'" data-jump="'+gid('1'+d)+'" aria-label="'+cap(longo(d,{weekday:'long',day:'numeric',month:'long'}))+': '+plural(n,'cliente','clientes')+'"'+(n?'':' disabled')+'><span class="wd">'+wd+'</span><span class="dn">'+dt.getDate()+'</span><span class="ct">'+(n||'–')+'</span></button>';
+  }
+  el.className='week'+(l?' has-late':'');
+  el.innerHTML=h;
+}
+function render(){renderViews();renderTop();renderWeek();renderGroups()}
 
 /* Painel lateral */
 const form=$('#form');
@@ -399,6 +465,9 @@ function abrir(id){
   $('#dTitle').textContent=id?c.nome:'Novo cliente';
   $('#dSub').textContent=id?(c.ultimo?'Último andamento em '+longo(c.ultimo,{day:'numeric',month:'long',year:'numeric'}):'Sem andamento registrado'):'Preencha o que souber. O resto pode ficar para depois.';
   $('#del').style.visibility=id?'visible':'hidden';
+  const hist=(id&&c.historico)||[];
+  $('#histTitle').hidden=!id;
+  $('#hist').innerHTML=!id?'':hist.length?'<ol class="hist">'+hist.map(h=>'<li><time>'+(h.data?longo(h.data,{day:'numeric',month:'long',year:'numeric'}):'Sem data')+'</time>'+esc(h.texto)+'</li>').join('')+'</ol>':'<p class="hist-empty">Os andamentos anteriores aparecem aqui conforme você for atualizando o caso.</p>';
   document.body.classList.add('open');$('#drawer').setAttribute('aria-hidden','false');
   setTimeout(()=>form.elements[id?'aFazer':'nome'].focus(),180);
 }
@@ -409,7 +478,10 @@ form.addEventListener('submit',e=>{
   if(!v.nome){form.elements.nome.focus();toast('Informe o nome do cliente para salvar.');return}
   if(editId){
     const c=clientes.find(x=>x.id===editId);
-    if(v.andamento!==(c.andamento||'')&&v.ultimo===(c.ultimo||''))v.ultimo=hoje();
+    if(v.andamento!==(c.andamento||'')){
+      if(c.andamento)c.historico=[{data:c.ultimo||'',texto:c.andamento}].concat(c.historico||[]);
+      if(v.ultimo===(c.ultimo||''))v.ultimo=hoje();
+    }
     Object.assign(c,v);toast('Alterações salvas');
   }else{clientes.push(Object.assign({id:uid()},v));toast('Cliente cadastrado')}
   save();fechar();render();
@@ -425,6 +497,14 @@ document.addEventListener('click',e=>{
     c.status=done(c)?'Pendente':'Concluído';save();render();
     toast(done(c)?c.nome+' concluído':c.nome+' reaberto',()=>{c.status=antes});return;
   }
+  const ad=e.target.closest('[data-a="adiar"]');
+  if(ad){
+    const c=clientes.find(x=>x.id===ad.closest('.row').dataset.id), antes=c.verificar;
+    c.verificar=addDays(hoje(),+ad.dataset.d);save();render();
+    toast(c.nome+': verificar '+(ad.dataset.d==='1'?'amanhã':'em '+curto(c.verificar)),()=>{c.verificar=antes});return;
+  }
+  const jp=e.target.closest('[data-jump]');
+  if(jp){const g=document.getElementById(jp.dataset.jump);if(g)g.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return}
   const row=e.target.closest('.row');if(row)abrir(row.dataset.id);
 });
 document.addEventListener('keydown',e=>{
